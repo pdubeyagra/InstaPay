@@ -70,7 +70,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
     if(!newUserAccount) throw new Error('Error creating user')
 
     const dwollaCustomerUrl = await createDwollaCustomer({
-      ...userData,
+      ...userData,  
       type: 'personal'
     })
 
@@ -105,16 +105,24 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
   }
 }
 
-export async function getLoggedInUser() {
+export async function getLoggedInUser () {
   try {
     const { account } = await createSessionClient();
     const result = await account.get();
 
-    const user = await getUserInfo({ userId: result.$id})
+    if (!result) {
+      return null;
+    }
+
+    const user = await getUserInfo({ userId: result.$id });
+
+    if (!user) {
+      return null;
+    }
 
     return parseStringify(user);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return null;
   }
 }
